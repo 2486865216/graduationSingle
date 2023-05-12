@@ -9,6 +9,7 @@ import com.example.graduationprojectsingle.exception.ConsumerException;
 import com.example.graduationprojectsingle.exception.ServiceException;
 import com.example.graduationprojectsingle.service.curriculum_user.CurriculumUserService;
 import com.example.graduationprojectsingle.utils.stringUtils.StringUtils;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -76,16 +77,11 @@ public class CurriculumUserController {
             //删除自己添加的锁
             String script = "if redis.call('get',KEYS[1]) == ARGV[1] " +
                     "then " +
-                    "return redis.call('del',KEYS[1]) " +
+                    "    redis.call('del',KEYS[1]) " +
                     "else " +
-                    "   return 0 " +
+                    "   return \"0\"" +
                     "end";
-            Object execute = redisTemplate.execute(RedisScript.of(script), Collections.singletonList(REDIS_LOCK_KEY), value);
-            if ("1".equals(String.valueOf(execute))) {
-                log.info("del lock success!");
-            } else {
-                log.error("del local failure!");
-            }
+            redisTemplate.execute(RedisScript.of(script), Collections.singletonList(REDIS_LOCK_KEY), value);
         }
     }
 

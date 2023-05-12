@@ -2,15 +2,15 @@ server:
   port: 9090
 
 spring:
-  redis:
-    host: 43.136.98.4
-    port: 6379
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://43.136.98.4:3306/graduationproject
     username: root
     password: zhangyuye
     type: com.alibaba.druid.pool.DruidDataSource
+  data:
+    redis:
+      host: 43.136.98.4
 
 
 mybatis-plus:

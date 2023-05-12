@@ -13,6 +13,7 @@ import com.example.graduationprojectsingle.exception.ServiceException;
 import com.example.graduationprojectsingle.service.curriculum_manager.CurriculumManagerService;
 import com.example.graduationprojectsingle.utils.collectionUtils.CollectionUtils;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/curriculum")
+@Slf4j
 public class CurriculumController {
 
     @Autowired
@@ -38,7 +40,9 @@ public class CurriculumController {
         if (CollectionUtils.isNotEmpty(list)) {
             ValueOperations<String, Object> operations = redisTemplate.opsForValue();
             for (CurriculumManager curriculumManager : list) {
+                log.info("初始化的课程数据：{}", curriculumManager.getId());
                 operations.set("data:" + curriculumManager.getId(), curriculumManager.getMaxCount());
+                log.info("{}", operations.get("data:" + curriculumManager.getId()));
             }
         }
     }
