@@ -2,6 +2,7 @@ package com.example.graduationprojectsingle.controller.student_manager;
 
 import com.example.graduationprojectsingle.Result.CommonResult;
 import com.example.graduationprojectsingle.Result.ResultUtil;
+import com.example.graduationprojectsingle.controller.curriculum_user.CurriculumUserController;
 import com.example.graduationprojectsingle.entity.class_manager.ClassManager;
 import com.example.graduationprojectsingle.entity.student_manager.req.AddStudentRequest;
 import com.example.graduationprojectsingle.entity.student_manager.req.UpdateStudentRequest;

@@ -2,6 +2,7 @@ package com.example.graduationprojectsingle.service.login.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.graduationprojectsingle.controller.curriculum_user.CurriculumUserController;
 import com.example.graduationprojectsingle.entity.class_manager.ClassManager;
 import com.example.graduationprojectsingle.entity.curriculum_user.CurriculumUser;
 import com.example.graduationprojectsingle.entity.department_manager.DepartmentManager;
@@ -46,6 +47,10 @@ public class LoginServerImpl extends ServiceImpl<LoginMapper, User> implements L
     @Autowired
     @Lazy
     private CurriculumUserService curriculumUserService;
+
+    @Autowired
+    @Lazy
+    private CurriculumUserController curriculumUserController;
 
     //通过用户名获取用户信息
     @Override
@@ -226,7 +231,11 @@ public class LoginServerImpl extends ServiceImpl<LoginMapper, User> implements L
         user.setIsDelete(true);
         user.setUpdateTime(LocalDateTime.now());
 
-        return this.updateById(user);
+        if (this.updateById(user)) {
+            curriculumUserService.deleteCurriculumUserByUserId(id);
+        }
+
+        return false;
     }
 
     @Override

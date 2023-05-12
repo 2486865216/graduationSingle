@@ -5,6 +5,7 @@ public enum ConsumerException {
     USERNAME_ERROR(500, "用户名错误!"),
     PASSWORD_ERROR(500, "密码错误!"),
     AUTHORIZATION_USER_ERROR(505, "未登录或者登录过期!"),
+    REDIS_LOCK_FAILURE(456, "选课失败!"),
 
     //请求参数异常
     INVALID_PARAMS(500, "非法的请求参数!"),

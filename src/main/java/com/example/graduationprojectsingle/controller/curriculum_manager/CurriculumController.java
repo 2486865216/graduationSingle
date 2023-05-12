@@ -12,7 +12,10 @@ import com.example.graduationprojectsingle.exception.ConsumerException;
 import com.example.graduationprojectsingle.exception.ServiceException;
 import com.example.graduationprojectsingle.service.curriculum_manager.CurriculumManagerService;
 import com.example.graduationprojectsingle.utils.collectionUtils.CollectionUtils;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -25,6 +28,21 @@ public class CurriculumController {
     @Autowired
     private CurriculumManagerService curriculumManagerService;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @PostConstruct
+    void init() {
+        //初始化redis
+        List<CurriculumManager> list = curriculumManagerService.getList(null, null, null, null, null, null);
+        if (CollectionUtils.isNotEmpty(list)) {
+            ValueOperations<String, Object> operations = redisTemplate.opsForValue();
+            for (CurriculumManager curriculumManager : list) {
+                operations.set("data:" + curriculumManager.getId(), curriculumManager.getMaxCount());
+            }
+        }
+    }
+
     @GetMapping("/list")
     public CommonResult<List<CurriculumResponse>> list(@RequestParam(required = false) String search,
                                                        @RequestParam(required = false) String name,
@@ -33,6 +51,12 @@ public class CurriculumController {
                                                        @RequestParam(required = false) Integer grade,
                                                        @RequestParam(required = false) Long departmentId) {
         List<CurriculumManager> list = curriculumManagerService.getList(search, name, code, credit, grade, departmentId);
+        return ResultUtil.success(this.packResponse(list));
+    }
+
+    @GetMapping("/getByClassRoomId")
+    public CommonResult<List<CurriculumResponse>> getByClassRoomId(@RequestParam Long classRoomId) {
+        List<CurriculumManager> list = curriculumManagerService.getByClassRoomId(classRoomId);
         return ResultUtil.success(this.packResponse(list));
     }
 

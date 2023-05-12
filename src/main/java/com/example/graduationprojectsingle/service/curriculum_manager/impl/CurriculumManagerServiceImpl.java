@@ -22,6 +22,7 @@ import com.example.graduationprojectsingle.utils.collectionUtils.CollectionUtils
 import com.example.graduationprojectsingle.utils.stringUtils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +46,9 @@ public class CurriculumManagerServiceImpl extends ServiceImpl<CurriculumManagerM
     @Autowired
     @Lazy
     private CurriculumUserService curriculumUserService;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public List<CurriculumManager> getList(String search, String name, String code, Double credit, Integer grade, Long departmentId) {
@@ -226,8 +230,12 @@ public class CurriculumManagerServiceImpl extends ServiceImpl<CurriculumManagerM
         curriculumManager.setDepartmentName(departmentManager.getName());
         curriculumManager.setCreateTime(LocalDateTime.now());
         curriculumManager.setUpdateTime(LocalDateTime.now());
-
-        return this.save(curriculumManager);
+        //初始化Redis
+        if (this.save(curriculumManager)) {
+            redisTemplate.opsForValue().set("data:" + curriculumManager.getId(), curriculumManager.getMaxCount());
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -459,7 +467,7 @@ public class CurriculumManagerServiceImpl extends ServiceImpl<CurriculumManagerM
             queryWrapper.in(CurriculumManager::getId, curriculumIds)
                     .eq(CurriculumManager::getIsDelete, false);
             return this.list(queryWrapper);
-        }else {
+        } else {
             return new ArrayList<>();
         }
     }
